@@ -7,6 +7,8 @@
 
 bool ni_mk2_open(struct ni_mk2 *ctx, const char *hid_path)
 {
+  memset(ctx, 0, sizeof (*ctx));
+
   ctx->fd = open(hid_path, O_RDWR, 0644);
   if (!ctx->fd < 0)
     return false;
@@ -30,11 +32,13 @@ ssize_t ni_mk2_read(struct ni_mk2 *ctx, struct ni_mk2_msg *msg)
   case NI_MK2_MSG_PADS:
     for (int i = 0; i < 32; ++i)
       msg->pads[i] = le16toh(msg->pads[i]) & 0x0fff;
+    memcpy(ctx->pads, msg->pads, sizeof (msg->pads));
     break;
 
   case NI_MK2_MSG_BTS:
     for (int i = 0; i < 8; ++i)
       msg->bts.wheels[i] = le16toh(msg->bts.wheels[i]);
+    memcpy(&ctx->bts, &msg->bts, sizeof (msg->bts));
     break;
 
   default:

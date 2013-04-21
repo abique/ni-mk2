@@ -18,6 +18,7 @@
 # define NI_MK2_MSG_BTS 0x01
 # define NI_MK2_MSG_BTS_SIZE 25
 
+/** the state of buttons: 0 released, 1 pushed */
 struct ni_mk2_bts {
   unsigned top0            : 1;
   unsigned top1            : 1;
@@ -72,6 +73,7 @@ struct ni_mk2_bts {
   uint16_t wheels[8]; // from 0 to 1000
 } __attribute__((packed));
 
+/** a message received from the device */
 struct ni_mk2_msg {
   uint8_t type;
 
@@ -82,11 +84,19 @@ struct ni_mk2_msg {
   };
 } __attribute__((packed));
 
+/** the device context */
 struct ni_mk2 {
-  int fd;
+  int               fd;
+
+  /* current state */
+  uint16_t          pads[32];
+  struct ni_mk2_bts bts;
 };
 
-/** opens and initialize the mk2 device */
+/**
+ * opens and initialize the mk2 device
+ * @return false on error, true on success
+ */
 bool ni_mk2_open(struct ni_mk2 *ctx, const char *hid_path);
 
 /** closes the device */
