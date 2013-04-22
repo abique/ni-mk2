@@ -99,11 +99,54 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  for (int i = 0; i < 16; ++i) {
-    mk2.pads_lights[i].r = 0x80 / 16 * i;
-    mk2.pads_lights[i].g = 0x80 / 16 * i;
-    mk2.pads_lights[i].b = 0x80 / 16 * i;
-  }
+  mk2.pads_lights[0].r = 0x80;
+  mk2.pads_lights[0].g = 0x00;
+  mk2.pads_lights[0].b = 0x00;
+  mk2.pads_lights[1].r = 0x00;
+  mk2.pads_lights[1].g = 0x80;
+  mk2.pads_lights[1].b = 0x00;
+  mk2.pads_lights[2].r = 0x00;
+  mk2.pads_lights[2].g = 0x00;
+  mk2.pads_lights[2].b = 0x80;
+  mk2.pads_lights[3].r = 0x80;
+  mk2.pads_lights[3].g = 0x80;
+  mk2.pads_lights[3].b = 0x00;
+  mk2.pads_lights[4].r = 0x80;
+  mk2.pads_lights[4].g = 0x00;
+  mk2.pads_lights[4].b = 0x80;
+  mk2.pads_lights[5].r = 0x00;
+  mk2.pads_lights[5].g = 0x80;
+  mk2.pads_lights[5].b = 0x80;
+  mk2.pads_lights[6].r = 0x80;
+  mk2.pads_lights[6].g = 0x80;
+  mk2.pads_lights[6].b = 0x80;
+  mk2.pads_lights[7].r = 0x40;
+  mk2.pads_lights[7].g = 0x80;
+  mk2.pads_lights[7].b = 0x80;
+  mk2.pads_lights[8].r = 0x80;
+  mk2.pads_lights[8].g = 0x40;
+  mk2.pads_lights[8].b = 0x80;
+  mk2.pads_lights[9].r = 0x80;
+  mk2.pads_lights[9].g = 0x80;
+  mk2.pads_lights[9].b = 0x40;
+  mk2.pads_lights[10].r = 0x40;
+  mk2.pads_lights[10].g = 0x40;
+  mk2.pads_lights[10].b = 0x80;
+  mk2.pads_lights[11].r = 0x40;
+  mk2.pads_lights[11].g = 0x80;
+  mk2.pads_lights[11].b = 0x40;
+  mk2.pads_lights[12].r = 0x80;
+  mk2.pads_lights[12].g = 0x40;
+  mk2.pads_lights[12].b = 0x40;
+  mk2.pads_lights[13].r = 0x20;
+  mk2.pads_lights[13].g = 0x40;
+  mk2.pads_lights[13].b = 0x80;
+  mk2.pads_lights[14].r = 0x40;
+  mk2.pads_lights[14].g = 0x20;
+  mk2.pads_lights[14].b = 0x80;
+  mk2.pads_lights[15].r = 0x80;
+  mk2.pads_lights[15].g = 0x20;
+  mk2.pads_lights[15].b = 0x40;
   ni_mk2_pads_set_lights(&mk2);
 
   mk2.groups_lights[0].left.r = 0x80;
@@ -155,16 +198,53 @@ int main(int argc, char **argv)
   mk2.groups_lights[7].right.g = 0x80;
   mk2.groups_lights[7].right.b = 0x00;
 
-  mk2.transport_lights.restart = 0x10;
+  mk2.transport_lights.restart = 0x20;
   mk2.transport_lights.left = 0x20;
-  mk2.transport_lights.right = 0x30;
-  mk2.transport_lights.grid = 0x40;
-  mk2.transport_lights.play = 0x50;
-  mk2.transport_lights.rec = 0x60;
-  mk2.transport_lights.erase = 0x70;
-  mk2.transport_lights.shift = 0x80;
+  mk2.transport_lights.right = 0x20;
+  mk2.transport_lights.grid = 0x20;
+  mk2.transport_lights.play = 0x20;
+  mk2.transport_lights.rec = 0x20;
+  mk2.transport_lights.erase = 0x20;
+  mk2.transport_lights.shift = 0x20;
 
   ni_mk2_groups_transport_set_lights(&mk2);
+
+  mk2.buttons_lights.control = 0x20;
+  mk2.buttons_lights.step = 0x20;
+  mk2.buttons_lights.browse = 0x20;
+  mk2.buttons_lights.sampling = 0x20;
+  mk2.buttons_lights.browse_left = 0x20;
+  mk2.buttons_lights.browse_right = 0x20;
+  mk2.buttons_lights.all = 0x20;
+  mk2.buttons_lights.auto_wr = 0x20;
+
+  mk2.buttons_lights.top0 = 0x20;
+  mk2.buttons_lights.top1 = 0x20;
+  mk2.buttons_lights.top2 = 0x20;
+  mk2.buttons_lights.top3 = 0x20;
+  mk2.buttons_lights.top4 = 0x20;
+  mk2.buttons_lights.top5 = 0x20;
+  mk2.buttons_lights.top6 = 0x20;
+  mk2.buttons_lights.top7 = 0x20;
+
+  mk2.buttons_lights.scene = 0x20;
+  mk2.buttons_lights.pattern = 0x20;
+  mk2.buttons_lights.pad_mode = 0x20;
+  mk2.buttons_lights.navigate = 0x20;
+  mk2.buttons_lights.duplicate = 0x20;
+  mk2.buttons_lights.select = 0x20;
+  mk2.buttons_lights.solo = 0x20;
+  mk2.buttons_lights.mute = 0x20;
+
+  mk2.buttons_lights.volume = 0x20;
+  mk2.buttons_lights.swing = 0x20;
+  mk2.buttons_lights.tempo = 0x20;
+  mk2.buttons_lights.master_left = 0x20;
+  mk2.buttons_lights.master_right = 0x20;
+  mk2.buttons_lights.enter = 0x20;
+  mk2.buttons_lights.note_repeat = 0x20;
+
+  ni_mk2_buttons_set_lights(&mk2);
 
   while (true) {
     struct ni_mk2_msg msg;

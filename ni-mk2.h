@@ -24,6 +24,9 @@
 # define NI_MK2_MSG_GRP_TP_SET_LIGHTS 0x81
 # define NI_MK2_MSG_GRP_TP_SET_LIGHTS_SIZE (1 + 8 * (3 + 3) + 8)
 
+# define NI_MK2_MSG_BTS_SET_LIGHTS 0x82
+# define NI_MK2_MSG_BTS_SET_LIGHTS_SIZE (1 + 8 + 8 + 8 + 7)
+
 /** the state of buttons: 0 released, 1 pushed */
 struct ni_mk2_bts {
   unsigned top0            : 1;
@@ -102,6 +105,43 @@ struct ni_mk2_transport_lights {
   uint8_t shift;
 } __attribute__((packed));
 
+struct ni_mk2_buttons_lights {
+  uint8_t control;
+  uint8_t step;
+  uint8_t browse;
+  uint8_t sampling;
+  uint8_t browse_left;
+  uint8_t browse_right;
+  uint8_t all;
+  uint8_t auto_wr;
+
+  uint8_t top0;
+  uint8_t top1;
+  uint8_t top2;
+  uint8_t top3;
+  uint8_t top4;
+  uint8_t top5;
+  uint8_t top6;
+  uint8_t top7;
+
+  uint8_t scene;
+  uint8_t pattern;
+  uint8_t pad_mode;
+  uint8_t navigate;
+  uint8_t duplicate;
+  uint8_t select;
+  uint8_t solo;
+  uint8_t mute;
+
+  uint8_t volume;
+  uint8_t swing;
+  uint8_t tempo;
+  uint8_t master_left;
+  uint8_t master_right;
+  uint8_t enter;
+  uint8_t note_repeat;
+} __attribute__((packed));
+
 /** a message received from the device */
 struct ni_mk2_msg {
   uint8_t type;
@@ -128,6 +168,7 @@ struct ni_mk2 {
   struct ni_mk2_rgb_light pads_lights[16];
   struct ni_mk2_group_lights groups_lights[8];
   struct ni_mk2_transport_lights transport_lights;
+  struct ni_mk2_buttons_lights buttons_lights;
 };
 
 /**
@@ -148,5 +189,6 @@ ssize_t ni_mk2_read(struct ni_mk2 *ctx,
 
 ssize_t ni_mk2_pads_set_lights(struct ni_mk2 *ctx);
 ssize_t ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx);
+ssize_t ni_mk2_buttons_set_lights(struct ni_mk2 *ctx);
 
 #endif /* !NI_MK2_H */

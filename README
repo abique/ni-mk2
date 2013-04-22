@@ -29,3 +29,13 @@ Color groups and transport:
 81 => msg_type
 then each group button has two leds so [left, right] => [[r,g,b],[r,g,b]]
 then there are 8 bytes left, each ones are the light intensity (monochrome) of the 8 transport buttons
+
+
+Light all the buttons left
+820a0a0a0a3f3f0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a
+82 => msg_type
+then 1 byte for the light of each buttons:
+control, step, browse, sampling, browse_left, browse_right, all, auto_wr,
+top0, ..., top7
+scene, pattern, pad_mode, navigate, duplicate, select, solo, mute,
+volume, swing, tempo, master_left, master_right, enter, note_repeat

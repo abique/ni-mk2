@@ -78,3 +78,11 @@ ssize_t ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx)
          sizeof (ctx->transport_lights));
   return write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
 }
+
+ssize_t ni_mk2_buttons_set_lights(struct ni_mk2 *ctx)
+{
+  uint8_t buffer[NI_MK2_MSG_BTS_SET_LIGHTS_SIZE];
+  buffer[0] = NI_MK2_MSG_BTS_SET_LIGHTS;
+  memcpy(buffer + 1, &ctx->buttons_lights, sizeof (ctx->buttons_lights));
+  return write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
+}
