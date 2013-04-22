@@ -18,6 +18,9 @@
 # define NI_MK2_MSG_BTS 0x01
 # define NI_MK2_MSG_BTS_SIZE 25
 
+# define NI_MK2_MSG_PADS_SET_COLOR 0x80
+# define NI_MK2_MSG_PADS_SET_COLOR_SIZE (1 + 16 * 3)
+
 /** the state of buttons: 0 released, 1 pushed */
 struct ni_mk2_bts {
   unsigned top0            : 1;
@@ -73,6 +76,13 @@ struct ni_mk2_bts {
   uint16_t wheels[8]; // from 0 to 1000
 } __attribute__((packed));
 
+// fields varies from 0x00 to 0x80
+struct ni_mk2_pad_color {
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+} __attribute__((packed));
+
 /** a message received from the device */
 struct ni_mk2_msg {
   uint8_t type;
@@ -91,6 +101,12 @@ struct ni_mk2 {
   /* current state */
   uint16_t          pads[32];
   struct ni_mk2_bts bts;
+
+  /* previous state */
+  uint16_t          prev_pads[32];
+  struct ni_mk2_bts prev_bts;
+
+  struct ni_mk2_pad_color pads_color[16];
 };
 
 /**
@@ -106,6 +122,9 @@ void ni_mk2_close(struct ni_mk2 *ctx);
  * reads a message from the device and store it into msg.
  * @return the number of bytes read
  */
-ssize_t ni_mk2_read(struct ni_mk2 *ctx, struct ni_mk2_msg *msg);
+ssize_t ni_mk2_read(struct ni_mk2 *ctx,
+                    struct ni_mk2_msg *msg);
+
+ssize_t ni_mk2_pads_set_color(struct ni_mk2 *ctx);
 
 #endif /* !NI_MK2_H */

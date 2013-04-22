@@ -94,6 +94,13 @@ int main(int argc, char **argv)
     return 1;
   }
 
+  for (int i = 0; i < 16; ++i) {
+    mk2.pads_color[i].r = 0x80 / 16 * i;
+    mk2.pads_color[i].g = 0x80 / 16 * i;
+    mk2.pads_color[i].b = 0x80 / 16 * i;
+  }
+  ni_mk2_pads_set_color(&mk2);
+
   while (true) {
     struct ni_mk2_msg msg;
     ssize_t nbytes = ni_mk2_read(&mk2, &msg);

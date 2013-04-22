@@ -1,1 +1,23 @@
 This is a library to control Native Instrument Maschine MK2.
+
+Wireshark
+=========
+
+usb.idVendor == 0x17cc and usb.idProduct == 0x1140
+
+Filter pads packets
+usb.data_len != 65
+
+Filter buttons and wheels
+usb.data_len != 25
+
+Data TX
+=======
+
+Orange all the pads:
+80200800200800200800200800200800200800200800200800200800200800200800200800200800200800200800200800
+80 => msg_type
+20 => red
+08 => green
+00 => blue
+Colors vary from 00 to 80
