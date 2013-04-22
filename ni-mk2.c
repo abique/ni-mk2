@@ -61,10 +61,20 @@ ssize_t ni_mk2_read(struct ni_mk2 *ctx, struct ni_mk2_msg *msg)
   return nbytes;
 }
 
-ssize_t ni_mk2_pads_set_color(struct ni_mk2 *ctx)
+ssize_t ni_mk2_pads_set_lights(struct ni_mk2 *ctx)
 {
-  uint8_t buffer[NI_MK2_MSG_PADS_SET_COLOR_SIZE];
-  buffer[0] = NI_MK2_MSG_PADS_SET_COLOR;
-  memcpy(buffer + 1, ctx->pads_color, sizeof (buffer) - 1);
+  uint8_t buffer[NI_MK2_MSG_PADS_SET_LIGHTS_SIZE];
+  buffer[0] = NI_MK2_MSG_PADS_SET_LIGHTS;
+  memcpy(buffer + 1, ctx->pads_lights, sizeof (ctx->pads_lights));
+  return write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
+}
+
+ssize_t ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx)
+{
+  uint8_t buffer[NI_MK2_MSG_GRP_TP_SET_LIGHTS_SIZE];
+  buffer[0] = NI_MK2_MSG_GRP_TP_SET_LIGHTS;
+  memcpy(buffer + 1, ctx->groups_lights, sizeof (ctx->groups_lights));
+  memcpy(buffer + 1 + sizeof (ctx->groups_lights), &ctx->transport_lights,
+         sizeof (ctx->transport_lights));
   return write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
 }

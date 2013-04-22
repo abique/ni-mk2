@@ -18,8 +18,11 @@
 # define NI_MK2_MSG_BTS 0x01
 # define NI_MK2_MSG_BTS_SIZE 25
 
-# define NI_MK2_MSG_PADS_SET_COLOR 0x80
-# define NI_MK2_MSG_PADS_SET_COLOR_SIZE (1 + 16 * 3)
+# define NI_MK2_MSG_PADS_SET_LIGHTS 0x80
+# define NI_MK2_MSG_PADS_SET_LIGHTS_SIZE (1 + 16 * 3)
+
+# define NI_MK2_MSG_GRP_TP_SET_LIGHTS 0x81
+# define NI_MK2_MSG_GRP_TP_SET_LIGHTS_SIZE (1 + 8 * (3 + 3) + 8)
 
 /** the state of buttons: 0 released, 1 pushed */
 struct ni_mk2_bts {
@@ -77,10 +80,26 @@ struct ni_mk2_bts {
 } __attribute__((packed));
 
 // fields varies from 0x00 to 0x80
-struct ni_mk2_pad_color {
+struct ni_mk2_rgb_light {
   uint8_t r;
   uint8_t g;
   uint8_t b;
+} __attribute__((packed));
+
+struct ni_mk2_group_lights {
+  struct ni_mk2_rgb_light left;
+  struct ni_mk2_rgb_light right;
+} __attribute__((packed));
+
+struct ni_mk2_transport_lights {
+  uint8_t restart;
+  uint8_t left;
+  uint8_t right;
+  uint8_t grid;
+  uint8_t play;
+  uint8_t rec;
+  uint8_t erase;
+  uint8_t shift;
 } __attribute__((packed));
 
 /** a message received from the device */
@@ -106,7 +125,9 @@ struct ni_mk2 {
   uint16_t          prev_pads[32];
   struct ni_mk2_bts prev_bts;
 
-  struct ni_mk2_pad_color pads_color[16];
+  struct ni_mk2_rgb_light pads_lights[16];
+  struct ni_mk2_group_lights groups_lights[8];
+  struct ni_mk2_transport_lights transport_lights;
 };
 
 /**
@@ -125,6 +146,7 @@ void ni_mk2_close(struct ni_mk2 *ctx);
 ssize_t ni_mk2_read(struct ni_mk2 *ctx,
                     struct ni_mk2_msg *msg);
 
-ssize_t ni_mk2_pads_set_color(struct ni_mk2 *ctx);
+ssize_t ni_mk2_pads_set_lights(struct ni_mk2 *ctx);
+ssize_t ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx);
 
 #endif /* !NI_MK2_H */

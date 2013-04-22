@@ -6,10 +6,12 @@ Wireshark
 usb.idVendor == 0x17cc and usb.idProduct == 0x1140
 
 Filter pads packets
-usb.data_len != 65
+usb.data_len == 65
 
 Filter buttons and wheels
-usb.data_len != 25
+usb.data_len == 25
+
+
 
 Data TX
 =======
@@ -21,3 +23,9 @@ Orange all the pads:
 08 => green
 00 => blue
 Colors vary from 00 to 80
+
+Color groups and transport:
+81000020000020001020001020001020001020002000002000001020001020001020001020003c7f003c7f20000a20000a0a0a0a0a0a0a0a0a
+81 => msg_type
+then each group button has two leds so [left, right] => [[r,g,b],[r,g,b]]
+then there are 8 bytes left, each ones are the light intensity (monochrome) of the 8 transport buttons

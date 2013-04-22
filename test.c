@@ -89,17 +89,82 @@ int main(int argc, char **argv)
 {
   struct ni_mk2 mk2;
 
+  if (argc != 2) {
+    fprintf(stderr, "usage: %s /dev/hidrawX\n", argv[0]);
+    return 2;
+  }
+
   if (!ni_mk2_open(&mk2, argv[1])) {
     fprintf(stderr, "%s: %m\n", argv[1]);
     return 1;
   }
 
   for (int i = 0; i < 16; ++i) {
-    mk2.pads_color[i].r = 0x80 / 16 * i;
-    mk2.pads_color[i].g = 0x80 / 16 * i;
-    mk2.pads_color[i].b = 0x80 / 16 * i;
+    mk2.pads_lights[i].r = 0x80 / 16 * i;
+    mk2.pads_lights[i].g = 0x80 / 16 * i;
+    mk2.pads_lights[i].b = 0x80 / 16 * i;
   }
-  ni_mk2_pads_set_color(&mk2);
+  ni_mk2_pads_set_lights(&mk2);
+
+  mk2.groups_lights[0].left.r = 0x80;
+  mk2.groups_lights[0].left.g = 0x00;
+  mk2.groups_lights[0].left.b = 0x00;
+  mk2.groups_lights[0].right.r = 0x00;
+  mk2.groups_lights[0].right.g = 0x80;
+  mk2.groups_lights[0].right.b = 0x00;
+  mk2.groups_lights[1].left.r = 0x00;
+  mk2.groups_lights[1].left.g = 0x00;
+  mk2.groups_lights[1].left.b = 0x80;
+  mk2.groups_lights[1].right.r = 0x80;
+  mk2.groups_lights[1].right.g = 0x00;
+  mk2.groups_lights[1].right.b = 0x00;
+  mk2.groups_lights[2].left.r = 0x00;
+  mk2.groups_lights[2].left.g = 0x80;
+  mk2.groups_lights[2].left.b = 0x00;
+  mk2.groups_lights[2].right.r = 0x00;
+  mk2.groups_lights[2].right.g = 0x00;
+  mk2.groups_lights[2].right.b = 0x80;
+  mk2.groups_lights[3].left.r = 0x80;
+  mk2.groups_lights[3].left.g = 0x00;
+  mk2.groups_lights[3].left.b = 0x00;
+  mk2.groups_lights[3].right.r = 0x00;
+  mk2.groups_lights[3].right.g = 0x80;
+  mk2.groups_lights[3].right.b = 0x00;
+  mk2.groups_lights[4].left.r = 0x80;
+  mk2.groups_lights[4].left.g = 0x00;
+  mk2.groups_lights[4].left.b = 0x00;
+  mk2.groups_lights[4].right.r = 0x00;
+  mk2.groups_lights[4].right.g = 0x80;
+  mk2.groups_lights[4].right.b = 0x00;
+  mk2.groups_lights[5].left.r = 0x00;
+  mk2.groups_lights[5].left.g = 0x00;
+  mk2.groups_lights[5].left.b = 0x80;
+  mk2.groups_lights[5].right.r = 0x80;
+  mk2.groups_lights[5].right.g = 0x00;
+  mk2.groups_lights[5].right.b = 0x00;
+  mk2.groups_lights[6].left.r = 0x00;
+  mk2.groups_lights[6].left.g = 0x80;
+  mk2.groups_lights[6].left.b = 0x00;
+  mk2.groups_lights[6].right.r = 0x00;
+  mk2.groups_lights[6].right.g = 0x00;
+  mk2.groups_lights[6].right.b = 0x80;
+  mk2.groups_lights[7].left.r = 0x80;
+  mk2.groups_lights[7].left.g = 0x00;
+  mk2.groups_lights[7].left.b = 0x00;
+  mk2.groups_lights[7].right.r = 0x00;
+  mk2.groups_lights[7].right.g = 0x80;
+  mk2.groups_lights[7].right.b = 0x00;
+
+  mk2.transport_lights.restart = 0x10;
+  mk2.transport_lights.left = 0x20;
+  mk2.transport_lights.right = 0x30;
+  mk2.transport_lights.grid = 0x40;
+  mk2.transport_lights.play = 0x50;
+  mk2.transport_lights.rec = 0x60;
+  mk2.transport_lights.erase = 0x70;
+  mk2.transport_lights.shift = 0x80;
+
+  ni_mk2_groups_transport_set_lights(&mk2);
 
   while (true) {
     struct ni_mk2_msg msg;
@@ -118,7 +183,7 @@ int main(int argc, char **argv)
       break;
 
     default:
-      printf("got %d bytes\n", nbytes);
+      printf("got %d bytes\n", (int)nbytes);
       dump(&msg, nbytes);
       break;
     }
