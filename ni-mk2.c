@@ -61,7 +61,7 @@ ssize_t ni_mk2_read(struct ni_mk2 *ctx, struct ni_mk2_msg *msg)
   return nbytes;
 }
 
-ssize_t ni_mk2_pads_set_lights(struct ni_mk2 *ctx)
+bool ni_mk2_pads_set_lights(struct ni_mk2 *ctx)
 {
   uint8_t buffer[NI_MK2_MSG_PADS_SET_LIGHTS_SIZE];
   buffer[0] = NI_MK2_MSG_PADS_SET_LIGHTS;
@@ -69,7 +69,7 @@ ssize_t ni_mk2_pads_set_lights(struct ni_mk2 *ctx)
   return write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
 }
 
-ssize_t ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx)
+bool ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx)
 {
   uint8_t buffer[NI_MK2_MSG_GRP_TP_SET_LIGHTS_SIZE];
   buffer[0] = NI_MK2_MSG_GRP_TP_SET_LIGHTS;
@@ -79,10 +79,32 @@ ssize_t ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx)
   return write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
 }
 
-ssize_t ni_mk2_buttons_set_lights(struct ni_mk2 *ctx)
+bool ni_mk2_buttons_set_lights(struct ni_mk2 *ctx)
 {
   uint8_t buffer[NI_MK2_MSG_BTS_SET_LIGHTS_SIZE];
   buffer[0] = NI_MK2_MSG_BTS_SET_LIGHTS;
   memcpy(buffer + 1, &ctx->buttons_lights, sizeof (ctx->buttons_lights));
   return write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
+}
+
+bool ni_mk2_screens_draw(struct ni_mk2 *ctx)
+{
+  uint8_t buffer[NI_MK2_MSG_SCREEN_DRAW_SIZE];
+
+  memset(buffer + 1, 0, 8);
+
+  for (int i = 0; i < 64 / 8; ++i) {
+    buffer[3] = i * 8;
+    buffer[5] = 0x20;
+    buffer[7] = 0x08;
+
+    buffer[0] = NI_MK2_MSG_SCREEN_LEFT_DRAW;
+    memcpy(buffer + 1 + 8, ctx->screen_left + 256 * i, 256);
+    write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
+
+    buffer[0] = NI_MK2_MSG_SCREEN_RIGHT_DRAW;
+    memcpy(buffer + 1 + 8, ctx->screen_right + 256 * i, 256);
+    write(ctx->fd, buffer, sizeof (buffer)) == sizeof (buffer);
+  }
+  return true;
 }

@@ -246,6 +246,10 @@ int main(int argc, char **argv)
 
   ni_mk2_buttons_set_lights(&mk2);
 
+  memset(mk2.screen_left, 0xff, sizeof (mk2.screen_left));
+  memset(mk2.screen_right, 0xff, sizeof (mk2.screen_right));
+  ni_mk2_screens_draw(&mk2);
+
   while (true) {
     struct ni_mk2_msg msg;
     ssize_t nbytes = ni_mk2_read(&mk2, &msg);

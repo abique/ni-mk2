@@ -27,6 +27,11 @@
 # define NI_MK2_MSG_BTS_SET_LIGHTS 0x82
 # define NI_MK2_MSG_BTS_SET_LIGHTS_SIZE (1 + 8 + 8 + 8 + 7)
 
+# define NI_MK2_MSG_SCREEN_LEFT_DRAW 0xe0
+# define NI_MK2_MSG_SCREEN_RIGHT_DRAW 0xe1
+# define NI_MK2_MSG_SCREEN_DRAW_SIZE (1 + 8 + 256)
+
+
 /** the state of buttons: 0 released, 1 pushed */
 struct ni_mk2_bts {
   unsigned top0            : 1;
@@ -169,6 +174,8 @@ struct ni_mk2 {
   struct ni_mk2_group_lights groups_lights[8];
   struct ni_mk2_transport_lights transport_lights;
   struct ni_mk2_buttons_lights buttons_lights;
+  uint8_t screen_left[64 * 256 / 8];
+  uint8_t screen_right[64 * 256 / 8];
 };
 
 /**
@@ -187,8 +194,9 @@ void ni_mk2_close(struct ni_mk2 *ctx);
 ssize_t ni_mk2_read(struct ni_mk2 *ctx,
                     struct ni_mk2_msg *msg);
 
-ssize_t ni_mk2_pads_set_lights(struct ni_mk2 *ctx);
-ssize_t ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx);
-ssize_t ni_mk2_buttons_set_lights(struct ni_mk2 *ctx);
+bool ni_mk2_pads_set_lights(struct ni_mk2 *ctx);
+bool ni_mk2_groups_transport_set_lights(struct ni_mk2 *ctx);
+bool ni_mk2_buttons_set_lights(struct ni_mk2 *ctx);
+bool ni_mk2_screens_draw(struct ni_mk2 *ctx);
 
 #endif /* !NI_MK2_H */
