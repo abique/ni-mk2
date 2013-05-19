@@ -9,4 +9,4 @@ add_executable(test test.c)
 target_link_libraries(test ni-mk2)
 
 add_executable(alsa-kb alsa-kb.c)
-target_link_libraries(alsa-kb ni-mk2 asound)
+target_link_libraries(alsa-kb ni-mk2 asound m)

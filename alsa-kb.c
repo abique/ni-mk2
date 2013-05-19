@@ -4,6 +4,7 @@
 #include <time.h>
 #include <errno.h>
 #include <string.h>
+#include <math.h>
 
 #define _POSIX_C_SOURCE
 
@@ -22,6 +23,16 @@ struct alsa_kb {
   snd_seq_event_t seq_ev;
 };
 
+int pads_vel(int pressure)
+{
+  int vel;
+
+  assert(0 <= pressure && pressure < 0x1000);
+  vel = 127 * (1 - expf((float)(-pressure * 7) / (float)0x1000));
+  assert(0 <= vel && vel < 128);
+  return vel;
+}
+
 void process_pads(struct alsa_kb *kb)
 {
   static const uint8_t pad_note_map[16] = {
@@ -33,8 +44,8 @@ void process_pads(struct alsa_kb *kb)
   int vel, vel_prev;
 
   for (int i = 0; i < 16; ++i) {
-    vel      = kb->mk2.pads[i] >> 5;
-    vel_prev = kb->mk2.prev_pads[i] >> 5;
+    vel      = pads_vel(kb->mk2.pads[i]);
+    vel_prev = pads_vel(kb->mk2.prev_pads[i]);
 
     assert(vel < 128);
     assert(vel_prev < 128);
