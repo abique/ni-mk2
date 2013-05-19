@@ -23,6 +23,7 @@ struct alsa_kb {
   snd_seq_event_t seq_ev;
 };
 
+#if 0
 int pads_vel(int pressure)
 {
   int vel;
@@ -32,6 +33,12 @@ int pads_vel(int pressure)
   assert(0 <= vel && vel < 128);
   return vel;
 }
+#else
+int pads_vel(int pressure)
+{
+  return pressure > 128 ? 127 : 0;
+}
+#endif
 
 void process_pads(struct alsa_kb *kb)
 {
