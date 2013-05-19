@@ -89,6 +89,7 @@ int pads_vel(int pressure)
 void process_pads(struct alsa_kb *kb)
 {
   int vel, vel_prev;
+  int update_lights = false;
 
   for (int i = 0; i < 16; ++i) {
     vel      = pads_vel(kb->mk2.pads[i]);
@@ -108,31 +109,34 @@ void process_pads(struct alsa_kb *kb)
       snd_seq_ev_set_noteoff(&kb->seq_ev, 1, pad_note_map[i] + kb->note_offset, vel);
     snd_seq_event_output(kb->seq, &kb->seq_ev);
     snd_seq_drain_output(kb->seq);
+    update_lights = true;
   }
-  set_piano_lights(kb);
+  if (update_lights)
+    set_piano_lights(kb);
 }
 
 void process_bts(struct alsa_kb *kb)
 {
-  printf("master: %d %d, %d %d\n",
-         kb->mk2.bts.master_left, kb->mk2.prev_bts.master_left,
-         kb->mk2.bts.master_right, kb->mk2.prev_bts.master_right);
+  int update_lights = false;
 
   if (kb->mk2.bts.master_left && !kb->mk2.prev_bts.master_left) {
-    printf("changed note offset -- !\n");
     if (kb->note_offset >= 12)
-      kb->note_offset -= 12;
+      kb->note_offset = ((kb->note_offset / 12) - 1) * 12;
     else
       kb->note_offset = 0;
+    update_lights = true;
   }
 
   if (kb->mk2.bts.master_right && !kb->mk2.prev_bts.master_right) {
-    printf("changed note offset ++ !\n");
-    if (kb->note_offset > 48)
-      kb->note_offset = 60;
+    if (kb->note_offset > 92)
+      kb->note_offset = 104;
     else
       kb->note_offset += 12;
+    update_lights = true;
   }
+
+  if (update_lights)
+    set_piano_lights(kb);
 }
 
 bool process_input(struct alsa_kb *kb)
@@ -149,7 +153,6 @@ bool process_input(struct alsa_kb *kb)
     return true;
 
   case NI_MK2_MSG_BTS:
-    printf("got buttons\n");
     process_bts(kb);
     return true;
 
