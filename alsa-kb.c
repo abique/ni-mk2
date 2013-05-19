@@ -112,6 +112,29 @@ void process_pads(struct alsa_kb *kb)
   set_piano_lights(kb);
 }
 
+void process_bts(struct alsa_kb *kb)
+{
+  printf("master: %d %d, %d %d\n",
+         kb->mk2.bts.master_left, kb->mk2.prev_bts.master_left,
+         kb->mk2.bts.master_right, kb->mk2.prev_bts.master_right);
+
+  if (kb->mk2.bts.master_left && !kb->mk2.prev_bts.master_left) {
+    printf("changed note offset -- !\n");
+    if (kb->note_offset >= 12)
+      kb->note_offset -= 12;
+    else
+      kb->note_offset = 0;
+  }
+
+  if (kb->mk2.bts.master_right && !kb->mk2.prev_bts.master_right) {
+    printf("changed note offset ++ !\n");
+    if (kb->note_offset > 48)
+      kb->note_offset = 60;
+    else
+      kb->note_offset += 12;
+  }
+}
+
 bool process_input(struct alsa_kb *kb)
 {
   struct ni_mk2_msg msg;
@@ -123,6 +146,11 @@ bool process_input(struct alsa_kb *kb)
   switch (msg.type) {
   case NI_MK2_MSG_PADS:
     process_pads(kb);
+    return true;
+
+  case NI_MK2_MSG_BTS:
+    printf("got buttons\n");
+    process_bts(kb);
     return true;
 
   default:
