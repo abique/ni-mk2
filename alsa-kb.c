@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
+#include <string.h>
 
 #define _POSIX_C_SOURCE
 
@@ -18,6 +19,7 @@ struct alsa_kb {
   struct ni_mk2 mk2;
   snd_seq_t *seq;
   int seq_port;
+  snd_seq_event_t seq_ev;
 };
 
 void process_pads(struct alsa_kb *kb)
@@ -29,7 +31,6 @@ void process_pads(struct alsa_kb *kb)
     48, 49, 50, 51
   };
   int vel, vel_prev;
-  snd_seq_event_t ev;
 
   for (int i = 0; i < 16; ++i) {
     vel      = kb->mk2.pads[i] >> 5;
@@ -42,12 +43,12 @@ void process_pads(struct alsa_kb *kb)
       continue;
 
     if (!vel_prev)
-      snd_seq_ev_set_noteon(&ev, 1, pad_note_map[i], vel);
+      snd_seq_ev_set_noteon(&kb->seq_ev, 1, pad_note_map[i], vel);
     else if (vel)
-      snd_seq_ev_set_keypress(&ev, 1, pad_note_map[i], vel);
+      snd_seq_ev_set_keypress(&kb->seq_ev, 1, pad_note_map[i], vel);
     else
-      snd_seq_ev_set_noteoff(&ev, 1, pad_note_map[i], vel);
-    snd_seq_event_output(kb->seq, &ev);
+      snd_seq_ev_set_noteoff(&kb->seq_ev, 1, pad_note_map[i], vel);
+    snd_seq_event_output(kb->seq, &kb->seq_ev);
     snd_seq_drain_output(kb->seq);
   }
 }
@@ -74,6 +75,8 @@ int main(int argc, char **argv)
 {
   struct alsa_kb kb;
 
+  memset(&kb, 0, sizeof (kb));
+
   if (argc != 2) {
     fprintf(stderr, "usage: %s /dev/hidrawX\n", argv[0]);
     return 2;
@@ -94,6 +97,10 @@ int main(int argc, char **argv)
     kb.seq, "NI Maschine MK2 (Out)",
     SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ,
     SND_SEQ_PORT_TYPE_MIDI_GENERIC);
+
+  snd_seq_ev_set_direct(&kb.seq_ev);
+  snd_seq_ev_set_source(&kb.seq_ev, kb.seq_port);
+  snd_seq_ev_set_subs(&kb.seq_ev);
 
   while (true) {
     process_input(&kb);

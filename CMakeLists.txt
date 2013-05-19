@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(ni_mk2)
+
 add_definitions(-std=c99 -D_BSD_SOURCE -Wall -Wextra)
 add_library(ni-mk2 ni-mk2.c)
 
