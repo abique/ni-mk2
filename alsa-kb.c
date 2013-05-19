@@ -21,7 +21,53 @@ struct alsa_kb {
   snd_seq_t *seq;
   int seq_port;
   snd_seq_event_t seq_ev;
+  int note_offset;
 };
+
+static const uint8_t pad_note_map[16] = {
+  12, 13, 14, 15,
+  8, 9, 10, 11,
+  4, 5, 6, 7,
+  0, 1, 2, 3
+};
+
+int is_black_note(int note)
+{
+  switch (note % 12) {
+  case 1:
+  case 3:
+  case 6:
+  case 8:
+  case 10:
+    return 1;
+  default:
+    return 0;
+  }
+}
+
+void set_piano_lights(struct alsa_kb *kb)
+{
+  for (int i = 0; i < 16; ++i) {
+    int note = kb->note_offset + pad_note_map[i];
+
+    if (is_black_note(note)) {
+      kb->mk2.pads_lights[i].r = 0;
+      kb->mk2.pads_lights[i].g = 0x20;
+      kb->mk2.pads_lights[i].b = 0x20;
+    } else {
+      kb->mk2.pads_lights[i].r = 0x40;
+      kb->mk2.pads_lights[i].g = 0x40;
+      kb->mk2.pads_lights[i].b = 0x40;
+    }
+
+    if (kb->mk2.pads[i] > 128) {
+      kb->mk2.pads_lights[i].r *= 2;
+      kb->mk2.pads_lights[i].g *= 2;
+      kb->mk2.pads_lights[i].b *= 2;
+    }
+  }
+  ni_mk2_pads_set_lights(&kb->mk2);
+}
 
 #if 0
 int pads_vel(int pressure)
@@ -42,12 +88,6 @@ int pads_vel(int pressure)
 
 void process_pads(struct alsa_kb *kb)
 {
-  static const uint8_t pad_note_map[16] = {
-    60, 61, 62, 63,
-    56, 57, 58, 59,
-    52, 53, 54, 55,
-    48, 49, 50, 51
-  };
   int vel, vel_prev;
 
   for (int i = 0; i < 16; ++i) {
@@ -61,14 +101,15 @@ void process_pads(struct alsa_kb *kb)
       continue;
 
     if (!vel_prev)
-      snd_seq_ev_set_noteon(&kb->seq_ev, 1, pad_note_map[i], vel);
+      snd_seq_ev_set_noteon(&kb->seq_ev, 1, pad_note_map[i] + kb->note_offset, vel);
     else if (vel)
-      snd_seq_ev_set_keypress(&kb->seq_ev, 1, pad_note_map[i], vel);
+      snd_seq_ev_set_keypress(&kb->seq_ev, 1, pad_note_map[i] + kb->note_offset, vel);
     else
-      snd_seq_ev_set_noteoff(&kb->seq_ev, 1, pad_note_map[i], vel);
+      snd_seq_ev_set_noteoff(&kb->seq_ev, 1, pad_note_map[i] + kb->note_offset, vel);
     snd_seq_event_output(kb->seq, &kb->seq_ev);
     snd_seq_drain_output(kb->seq);
   }
+  set_piano_lights(kb);
 }
 
 bool process_input(struct alsa_kb *kb)
@@ -94,6 +135,8 @@ int main(int argc, char **argv)
   struct alsa_kb kb;
 
   memset(&kb, 0, sizeof (kb));
+
+  kb.note_offset = 48;
 
   if (argc != 2) {
     fprintf(stderr, "usage: %s /dev/hidrawX\n", argv[0]);
